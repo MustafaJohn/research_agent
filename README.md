@@ -33,3 +33,4 @@ research_agent/
 │
 └── main.py        <- Entry Point
 ```
+<img width="489" height="447" alt="image" src="https://github.com/user-attachments/assets/8706cd06-b394-4843-baf6-d186be9dace8" />
