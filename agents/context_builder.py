@@ -1,6 +1,7 @@
 from orchestration.state import ResearchState
 
 def context_builder_agent(state: ResearchState) -> ResearchState:
+    """Agent to build context"""
     parts = []
 
     vector_results = state.get("vector_results", [])
@@ -24,3 +25,4 @@ def context_builder_agent(state: ResearchState) -> ResearchState:
 
     state["final_context"] = "\n\n".join(parts)
     return state
+
