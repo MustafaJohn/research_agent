@@ -58,3 +58,25 @@ class ResearchState(TypedDict):
     next_step: str
     analysis_decision: str
 ```
+
+## Memory Subsystems
+
+### Vector Memory
+- Used for semantic retrieval
+- Info fetched from the internet is stored in vector memory
+  
+### Graph Memory
+- Persistent entity co-occurrence graph
+- Optimized for auditability and traceability
+
+## Failure Handling
+- Tool calls are isolated per agent
+- Failures do not crash the graph
+- Supervisor node decides whether to continue or abort
+- System supports deterministic re-runs
+- LLM does not hallucinate random stuff when the memory retrieved is garbage, as it is grounded by some context and user query.
+
+## Running the system
+```python
+python main.py
+```
