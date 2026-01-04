@@ -2,7 +2,7 @@
 
 This project implements an execution-driven, agentic research system using LangGraph. The focus is on **control flow, state management, tool isolation, and memory separation**, rather than prompt chaining. 
 
-The system is intentionally designed as a **stateless execution graph** with explicit state transitions and failure boundaries.
+The system is intentionally designed as a stateless execution graph with explicit state transitions and defined failure boundaries.
 
 ---
 
@@ -78,8 +78,12 @@ class ResearchState(TypedDict):
 ### Graph Memory
 - Persistent entity co-occurrence graph
 - Optimized for auditability and traceability
-- Used networkx for creating the graph and using Spacy to create tokens 
-
+- Used networkx for creating the graph and using Spacy to create tokens
+Note: Install Spacy's "en_core_web_trf" transformer using the steps below: 
+```python
+pip install spacy
+python -m spacy download en_core_web_trf
+```
 ## Failure Handling
 - Tool calls are isolated per agent
 - Failures do not crash the graph
