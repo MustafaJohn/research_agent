@@ -1,7 +1,8 @@
 from orchestration.state import ResearchState
 
 def supervisor_agent(state: ResearchState) -> ResearchState:
-  """Agent to do the supervision of tools"""
+    logs = state.setdefault("logs", [])
+
     # INITIAL ENTRY — bootstrap flow
     if not state.get("next_step"):
         state["next_step"] = "research"
@@ -21,3 +22,4 @@ def supervisor_agent(state: ResearchState) -> ResearchState:
         state["next_step"] = "end"
         print("[supervisor] Ending")
     return state
+

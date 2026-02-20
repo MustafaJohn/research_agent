@@ -1,13 +1,12 @@
 from memory.chunker import chunk_text
-from memory.vector_memory import VectorMemory
 from memory.graph_memory import GraphMemory
+from memory.vector_memory import VectorMemory
 from orchestration.state import ResearchState
 import time
 
-vector_mem = VectorMemory()
-graph_mem = GraphMemory()
+#graph_mem = GraphMemory()
 
-def memory_agent(state: ResearchState) -> ResearchState:
+def memory_agent(state: ResearchState, vector_mem: VectorMemory) -> ResearchState:
     """
     Docstring for memory_agent
     
@@ -34,8 +33,8 @@ def memory_agent(state: ResearchState) -> ResearchState:
     #print("Storing process over in vector memory", time.strftime("%X"))
     
     # Graph memory
-    for url, chunk_id, text in all_chunks:
-        graph_mem.add_chunk(url, chunk_id, text)
+    #for url, chunk_id, text in all_chunks:
+    #    graph_mem.add_chunk(url, chunk_id, text)
     #print("Storing process over in graph memory", time.strftime("%X"))
     
     return state

@@ -1,8 +1,10 @@
 from tools.fetch_web import FetchWebTool
 from orchestration.state import ResearchState
+from config import Config
 
 def research_agent(state: ResearchState) -> ResearchState:
-    docs = FetchWebTool().fetch_query("Research areas on " + state["query"], n_results=20)
+    n_results = Config.N_RESULTS
+    docs = FetchWebTool().fetch_query("Academic Research areas on " + state["query"], n_results=n_results)
     valid_docs = []
 
     for doc in docs:
