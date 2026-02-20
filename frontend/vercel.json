@@ -4,4 +4,12 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["iad1"]
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/agent/api/index.py" }
+  ],
+  "functions": {
+    "agent/api/*.py": {
+      "runtime": "@vercel/python"
+    }
+  }
 }
