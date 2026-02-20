@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 from ddgs import DDGS  
 import hashlib
 import re
+import fitz
+
 
 class FetchWebTool:
     """
@@ -17,9 +19,10 @@ class FetchWebTool:
       - Store raw pages to disk
     """
 
-    def __init__(self, raw_data_dir="data\\raw", rate_limit=1.5):
-        self.raw_data_dir = raw_data_dir
-        self.rate_limit = rate_limit
+    def __init__(self, raw_data_dir=None, rate_limit=None):
+        from config import Config
+        self.raw_data_dir = raw_data_dir or str(Config.RAW_DATA_DIR)
+        self.rate_limit = rate_limit or Config.RATE_LIMIT
         os.makedirs(self.raw_data_dir, exist_ok=True)
 
     # Function to search on DuckDuckGo
@@ -45,42 +48,61 @@ class FetchWebTool:
         return os.path.exists(os.path.join(self.raw_data_dir, filename))
     
     def fetch_url(self, url):
-        """
-        Download + extract readable text + save locally.
-        No retries yet
-        """
+
         filename = self._clean_url(url)
         file_path = os.path.join(self.raw_data_dir, filename)
-        
+
         if self._already_downloaded(url):
-            #print(f"[cached] {url}")
             with open(file_path, "r", encoding="utf-8") as f:
                 return f.read()
-        try:
-            #print(f"[fetching] {url}")
-            response = requests.get(url, timeout=12, headers={
-                "User-Agent": "Research Agent"
-            })
-            response.raise_for_status()
-        except Exception as e:
-            #print(f"[ERROR] fetching {url}: {e}")
-            return ""
-            
-        soup = BeautifulSoup(response.text, "html.parser")
-            
-        # Extract readable text 
-        for script in soup(["script", "style", "header", "footer", "nav"]):
-            script.extract()
 
-        text = soup.get_text(separator="\n")
-        cleaned = "\n".join(line.strip() for line in text.splitlines() if line.strip())
-            
-        # Save to disk in raw data directory as txt file
+        try:
+            response = requests.get(
+                url,
+                timeout=12,
+                headers={"User-Agent": "Research Agent"}
+            )
+            response.raise_for_status()
+
+        except Exception as e:
+            print(f"[ERROR fetch] {url} -> {e}")
+            return ""
+
+        text = ""
+
+        ctype = response.headers.get("Content-Type", "").lower()
+
+        if "text/html" in ctype:
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            for tag in soup(["script","style","header","footer","nav"]):
+                tag.extract()
+
+            text = soup.get_text(separator="\n")
+
+        elif "application/pdf" in ctype:
+            text = self.parse_pdf(response.content)
+
+        else:
+            print(f"[SKIP unsupported type] {ctype} -> {url}")
+            return ""
+
+        # Safety guard
+        if not text:
+            return ""
+
+        cleaned = "\n".join(
+            line.strip()
+            for line in text.splitlines()
+            if line.strip()
+        )
+
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(cleaned)
-            
+
         time.sleep(self.rate_limit)
         return cleaned
+
 
     def fetch_query(self, query, n_results=10):
         """ Search + fetch URLs for a given input"""
@@ -95,6 +117,21 @@ class FetchWebTool:
             pages.append({'url': url, 'text': text})
         
         return pages
+
+    def parse_pdf(self,content_bytes):
+
+        text = ""
+
+        try:
+            with fitz.open(stream=content_bytes, filetype="pdf") as doc:
+                for page in doc:
+                    text += page.get_text()
+
+        except Exception as e:
+            print("[PDF PARSE FAIL]", e)
+
+        return text
+
 
 #if __name__ == "__main__":
 #    tool = FetchWebTool()
