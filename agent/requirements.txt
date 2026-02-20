@@ -1,0 +1,33 @@
+# Core dependencies
+fastapi
+uvicorn
+pydantic
+python-dotenv
+
+# LangGraph and LangChain (compatible versions)
+langgraph
+langchain
+langchain-core
+
+# Google Gemini API
+google-genai
+
+# Web scraping
+requests
+beautifulsoup4
+ddgs
+
+# PDF processing
+PyMuPDF
+
+# Vector memory and embeddings
+faiss-cpu
+sentence-transformers
+numpy
+
+# Graph memory (optional)
+networkx
+spacy
+
+# Utilities
+python-multipart
