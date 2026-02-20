@@ -15,12 +15,14 @@ class VectorMemory:
     """
 
     def __init__(self, 
-                 index_path="data/memory.index",
-                 meta_path="data/memory_store.json",
-                 model_name="all-MiniLM-L6-v2"):
+                 index_path=None,
+                 meta_path=None,
+                 model_name=None):
+        from config import Config
         
-        self.index_path = index_path
-        self.meta_path = meta_path
+        self.index_path = str(index_path or Config.MEMORY_INDEX_PATH)
+        self.meta_path = str(meta_path or Config.MEMORY_META_PATH)
+        model_name = model_name or Config.EMBEDDING_MODEL
         
         self.model = SentenceTransformer(model_name)
         
@@ -30,8 +32,8 @@ class VectorMemory:
         
         # vector index
         self.dimension = 384  # all-MiniLM-L6-v2 embeddings size
-        self.index = faiss.IndexFlatL2(self.dimension)
-
+        self.index = faiss.IndexFlatIP(self.dimension)
+        print("VectorMemory instance:", id(self))
         self._load()
 
     def _load(self):
@@ -93,10 +95,11 @@ class VectorMemory:
         stored_chunks = []
 
         for chunk_id, chunk_text in chunks:
-            if self._is_duplicate(chunk_text):
-                continue
-
+            
             emb = self._embed(chunk_text)
+            if self._is_duplicate(emb):
+                continue
+            faiss.normalize_L2(emb)
             self.index.add(emb)
 
             self.memory.append({
@@ -112,23 +115,22 @@ class VectorMemory:
         return stored_chunks
 
 
-    def _is_duplicate(self, chunk, threshold=0.85):
+    def _is_duplicate(self, chunk_emb, threshold=0.90):
         """Detect duplicates via cosine similarity."""
         if len(self.memory) < 1:
             return False
             
-        emb = self._embed(chunk)
-        scores, _ = self.index.search(emb, 1)  # nearest neighbor
+        scores, _ = self.index.search(chunk_emb, 1)  # nearest neighbor
         
-        if scores[0][0] < (1 - threshold):  
+        if scores[0][0] > threshold:  
             return True
         return False
 
     def search(self, query, k=5):
-        emb = self._embed(query)
-        scores, ids = self.index.search(emb, k)
-
         results = []
+        emb = self._embed(query)
+        faiss.normalize_L2(emb)
+        scores, ids = self.index.search(emb, k)
         for score, idx in zip(scores[0], ids[0]):
             if idx < 0 or idx >= len(self.memory):
                 continue
@@ -138,4 +140,6 @@ class VectorMemory:
                 "url": m["url"],
                 "chunk": m["chunk"]
             })
+        print("FAISS index size:", self.index.ntotal)
+        print("Memory size:", len(self.memory))
         return results
