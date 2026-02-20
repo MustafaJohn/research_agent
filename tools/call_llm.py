@@ -21,16 +21,6 @@ def call_llm(prompt: str, model: Optional[str] = None) -> str:
         ValueError: If API key is not set
         Exception: If API call fails
     """
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise ValueError("GEMINI_API_KEY environment variable is not set")
-    
-    model_name = model or os.getenv("LLM_MODEL", "gemini-2.5-pro")
-    
-    try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(model=model_name, contents=prompt)
-        return response.text
-    except Exception as e:
-        logger.error(f"Error calling LLM: {e}")
-        raise
+    client = genai.Client(api_key="AIzaSyCTyEdp66wslCOQAnG9SLofxXuUGUelQBc")
+    model = "gemini-2.5-pro"
+    return client.models.generate_content(model=model, contents=prompt).text

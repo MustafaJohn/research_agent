@@ -5,11 +5,6 @@ from tools.call_llm import call_llm
 from orchestration.state import ResearchState
 
 def summarizer_agent(state: ResearchState) -> ResearchState:
-    from config import Config
-    import logging
-    
-    logger = logging.getLogger(__name__)
-    
     prompt = f"""
     Give some potential research areas using the context below. 
 
@@ -19,7 +14,7 @@ def summarizer_agent(state: ResearchState) -> ResearchState:
     Context:
     {state['final_context']}
     """
-    trials = Config.MAX_RETRIES
+    trials = 20
     for no in range(trials):
         try:
             print("Calling LLM for summarization...")
@@ -28,9 +23,9 @@ def summarizer_agent(state: ResearchState) -> ResearchState:
             state["final_context"] = result
             return state
         except Exception as e:
-            logger.error(f"Error calling LLM: {e}. Retrying...")
+            print(f"Error calling LLM: {e}. Retrying...")
             sleep(3)  # Wait before retrying
             continue
-    logger.error("Failed to call LLM after multiple attempts.")
+    print("Failed to call LLM after multiple attempts.")
     state["final_context"] = "Error: Failed to generate summary after multiple attempts."
     return state

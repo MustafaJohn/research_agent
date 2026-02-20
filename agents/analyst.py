@@ -4,10 +4,8 @@ from memory.vector_memory import VectorMemory
 
 #graph_mem = GraphMemory()
 
-# thresholds — tweakable knobs (now from config)
-from config import Config
-MIN_VECTOR_HITS = Config.MIN_VECTOR_HITS
-MIN_AVG_SCORE = Config.MIN_AVG_SCORE
+MIN_VECTOR_HITS = 10
+MIN_AVG_SCORE = 0.6
 MIN_GRAPH_HITS = 1
 
 

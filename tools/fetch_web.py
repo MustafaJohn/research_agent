@@ -19,10 +19,9 @@ class FetchWebTool:
       - Store raw pages to disk
     """
 
-    def __init__(self, raw_data_dir=None, rate_limit=None):
-        from config import Config
-        self.raw_data_dir = raw_data_dir or str(Config.RAW_DATA_DIR)
-        self.rate_limit = rate_limit or Config.RATE_LIMIT
+    def __init__(self, raw_data_dir="data\\raw", rate_limit=1.5):
+        self.raw_data_dir = raw_data_dir
+        self.rate_limit = rate_limit
         os.makedirs(self.raw_data_dir, exist_ok=True)
 
     # Function to search on DuckDuckGo

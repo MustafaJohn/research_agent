@@ -15,14 +15,12 @@ class VectorMemory:
     """
 
     def __init__(self, 
-                 index_path=None,
-                 meta_path=None,
-                 model_name=None):
-        from config import Config
-        
-        self.index_path = str(index_path or Config.MEMORY_INDEX_PATH)
-        self.meta_path = str(meta_path or Config.MEMORY_META_PATH)
-        model_name = model_name or Config.EMBEDDING_MODEL
+                 index_path="data/memory.index",
+                 meta_path="data/memory_store.json",
+                 model_name="all-MiniLM-L6-v2"):
+
+        self.index_path = index_path
+        self.meta_path = meta_path
         
         self.model = SentenceTransformer(model_name)
         

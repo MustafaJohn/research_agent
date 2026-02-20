@@ -1,7 +1,6 @@
 from orchestration.state import ResearchState
 
 def supervisor_agent(state: ResearchState) -> ResearchState:
-    logs = state.setdefault("logs", [])
 
     # INITIAL ENTRY — bootstrap flow
     if not state.get("next_step"):
