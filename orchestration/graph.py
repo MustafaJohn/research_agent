@@ -1,7 +1,7 @@
 # orchestration/graph.py
 from langgraph.graph import StateGraph, END
 from orchestration.state import ResearchState
-
+from memory.vector_memory import VectorMemory
 from agents.supervisor import supervisor_agent
 from agents.researcher import research_agent
 from agents.memory_agent import memory_agent
@@ -12,12 +12,13 @@ from agents.summarizer import summarizer_agent
 
 def build_graph():
     graph = StateGraph(ResearchState)
-
+    
+    vector_mem = VectorMemory()
     # nodes (UNCHANGED)
     graph.add_node("supervisor", supervisor_agent)
     graph.add_node("research", research_agent)
-    graph.add_node("memory", memory_agent)
-    graph.add_node("analysis", analyst_agent)
+    graph.add_node("memory", lambda state: memory_agent(state, vector_mem))
+    graph.add_node("analysis", lambda state: analyst_agent(state, vector_mem))
     graph.add_node("context", context_builder_agent)
     graph.add_node("summarize", summarizer_agent)
 
