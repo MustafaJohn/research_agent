@@ -1,5 +1,5 @@
 from memory.chunker import chunk_text
-from memory.graph_memory import GraphMemory
+#from memory.graph_memory import GraphMemory
 from memory.vector_memory import VectorMemory
 from orchestration.state import ResearchState
 import time
@@ -38,3 +38,4 @@ def memory_agent(state: ResearchState, vector_mem: VectorMemory) -> ResearchStat
     #print("Storing process over in graph memory", time.strftime("%X"))
     
     return state
+
